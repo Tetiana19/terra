@@ -1,11 +1,23 @@
 #terraform {
  # required_version = "> 0.12.0"
   
-provider "azurerm" {
-  version = ">=2.0.79"
-  features {}
+#provider "azurerm" {
+#  version = ">=2.0.79"
+#  features {}
+#}
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">=2.0.79"
+    }
+  }
 }
 
+# Configure the Microsoft Azure Provider
+provider "azurerm" {
+  features {}
+}
 variable "app_service_name_prefix" {
   default = "my-prod-env"
   description = "The beginning part of your App Service host name"
