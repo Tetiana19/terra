@@ -1,13 +1,12 @@
 terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "=2.77.0"
-    }
+  required_version = "> 0.12.0"
+  
+  backend "azurerm" {
   }
 }
 
 provider "azurerm" {
+  version = ">=2.0.0"
   features {}
 }
 
