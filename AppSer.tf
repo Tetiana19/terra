@@ -2,24 +2,34 @@ provider "azurerm" {
   features {}
 }
 
+variable "app_service_name_prefix" {
+  default = "my-prod-env"
+  description = "The beginning part of your App Service host name"
+}
+
+resource "random_integer" "app_service_name_suffix" {
+  min = 1000
+  max = 9999
+}
+
 resource "azurerm_resource_group" "example" {
-  name     = "example-resources"
+  name     = "prod"
   location = "West Europe"
 }
 
 resource "azurerm_app_service_plan" "example" {
-  name                = "example-appserviceplan"
+  name                = "prod-appserviceplan"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
   sku {
-    tier = "Standard"
-    size = "S1"
-  }
+    tier = "Basic"
+    size = "B1"
+ }
 }
 
-resource "azurerm_app_service" "example" {
-  name                = "example-app-service"
+resource "azurerm_app_service" "prod" {
+  name                = "${var.app_service_name_prefix}-dev-${random_integer.app_service_name_suffix.result}"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
   app_service_plan_id = azurerm_app_service_plan.example.id
