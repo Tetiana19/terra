@@ -15,9 +15,9 @@ terraform {
 }
 
 # Configure the Microsoft Azure Provider
-provider "azurerm" {
-  features {}
-}
+#provider "azurerm" {
+ # features {}
+#}
 variable "app_service_name_prefix" {
   default = "my-prod-env"
   description = "The beginning part of your App Service host name"
