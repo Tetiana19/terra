@@ -6,6 +6,7 @@
 #  features {}
 #}
 variable "client_secret" {
+  client_secret   = "VITN4WwZMLOwBWjaJ-kRaJNrupWEDXC3BZ"
 }
 terraform {
   required_providers {
