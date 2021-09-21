@@ -5,6 +5,8 @@
 #  version = ">=2.0.79"
 #  features {}
 #}
+variable "client_secret" {
+}
 terraform {
   required_providers {
     azurerm = {
@@ -20,7 +22,7 @@ provider "azurerm" {
 
  subscription_id = "16acbe7c-85aa-4236-af7b-3583b1869ee7"
   client_id       = "6e4b4e8e-c7dc-40ab-a7c0-0e823507f5cd"
-  client_secret   = VITN4WwZMLOwBWjaJ-kRaJNrupWEDXC3BZ
+  client_secret   = var.client_secret
   tenant_id       = "b41b72d0-4e9f-4c26-8a69-f949f367c91d"
 }
 
