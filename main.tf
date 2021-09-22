@@ -44,18 +44,6 @@ resource "azurerm_subnet" "prodenv" {
   address_prefixes     = ["10.0.2.0/24"]
 }
 
-resource "azurerm_network_interface" "prodenv" {
-  name                = "prod-nic"
-  location            = azurerm_resource_group.proj.location
-  resource_group_name = azurerm_resource_group.proj.name
-
-  ip_configuration {
-    name                          = "pinternal"
-    subnet_id                     = azurerm_subnet.prodenv.id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
-
 resource "azurerm_public_ip" "prodenv" {
   name                = "prodpubip"
   resource_group_name = azurerm_resource_group.proj.name
@@ -89,7 +77,7 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
-resource "azurerm_network_interface" "nic" {
+resource "azurerm_network_interface" "prodenv" {
   name                = "prod-inter"
   location            = azurerm_resource_group.proj.location
   resource_group_name = azurerm_resource_group.proj.name
@@ -97,7 +85,7 @@ resource "azurerm_network_interface" "nic" {
   ip_configuration {
     name                          = "myNicConfiguration"
     subnet_id                     = azurerm_subnet.prodenv.id
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
     public_ip_address_id          = azurerm_public_ip.prodenv.id
   }
 
@@ -144,6 +132,7 @@ resource "azurerm_linux_virtual_machine" "prodenv" {
   name                = "prod-machine"
   resource_group_name = azurerm_resource_group.proj.name
   location            = azurerm_resource_group.proj.location
+  network_interface_ids = [azurerm_network_interface.prodenv.id]
   size                = "Standard_F2"
   admin_username      = "azureuser"
   network_interface_ids = [
@@ -193,18 +182,6 @@ resource "azurerm_subnet" "devenv" {
   address_prefixes     = ["11.0.4.0/24"]
 }
 
-resource "azurerm_network_interface" "devenv" {
-  name                = "dev-nic"
-  location            = azurerm_resource_group.proj1.location
-  resource_group_name = azurerm_resource_group.proj1.name
-
-  ip_configuration {
-    name                          = "dinternal"
-    subnet_id                     = azurerm_subnet.devenv.id
-    private_ip_address_allocation = "Static"
-  }
-}
-
  
  resource "azurerm_public_ip" "devenv" {
   name                = "devpubip"
@@ -247,7 +224,7 @@ resource "azurerm_network_interface" "dev" {
   ip_configuration {
     name                          = "myNicConfiguration"
     subnet_id                     = azurerm_subnet.devenv.id
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
     public_ip_address_id          = azurerm_public_ip.devenv.id
   }
 
@@ -276,6 +253,7 @@ resource "azurerm_storage_account" "devenv" {
   name                     = "dev${random_id.randomId.hex}"
   resource_group_name      = azurerm_resource_group.proj1.name
   location                 = azurerm_resource_group.proj1.location
+ network_interface_ids = [azurerm_network_interface.devenv.id]
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
