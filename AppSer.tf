@@ -26,7 +26,7 @@ provider "azurerm" {
 
 
 resource "azurerm_resource_group" "proj" {
-  name     = "Intermine_Project"
+  name     = "Intermine_Project_Prod"
   location = "West Europe"
 }
 
@@ -95,24 +95,29 @@ resource "azurerm_linux_virtual_machine" "prodenv" {
 
 
 #Dev env
+resource "azurerm_resource_group" "proj1" {
+  name     = "Intermine_Project_Dev"
+  location = "West Europe"
+}
+
 resource "azurerm_virtual_network" "devenv" {
   name                = "prod-network"
   address_space       = ["11.0.0.0/16"]
-  location            = azurerm_resource_group.proj.location
-  resource_group_name = azurerm_resource_group.proj.name
+  location            = azurerm_resource_group.proj1.location
+  resource_group_name = azurerm_resource_group.proj1.name
 }
 
 resource "azurerm_subnet" "devenv" {
   name                 = "dinternal"
-  resource_group_name  = azurerm_resource_group.proj.name
+  resource_group_name  = azurerm_resource_group.proj1.name
   virtual_network_name = azurerm_virtual_network.devenv.name
   address_prefixes     = ["11.0.4.0/24"]
 }
 
 resource "azurerm_network_interface" "devenv" {
   name                = "dev-nic"
-  location            = azurerm_resource_group.proj.location
-  resource_group_name = azurerm_resource_group.proj.name
+  location            = azurerm_resource_group.proj1.location
+  resource_group_name = azurerm_resource_group.proj1.name
 
   ip_configuration {
     name                          = "dinternal"
@@ -128,8 +133,8 @@ resource "tls_private_key" "devenv" {
 
 resource "azurerm_linux_virtual_machine" "dev" {
   name                = "devd-machine"
-  resource_group_name = azurerm_resource_group.proj.name
-  location            = azurerm_resource_group.proj.location
+  resource_group_name = azurerm_resource_group.proj1.name
+  location            = azurerm_resource_group.proj1.location
   size                = "Standard_F2"
   admin_username      = "azureuser"
   network_interface_ids = [
@@ -138,7 +143,7 @@ resource "azurerm_linux_virtual_machine" "dev" {
 
    admin_ssh_key {
         username = "azureuser"
-        public_key = tls_private_key.devenv.public_key_openssh #The magic here
+        public_key = tls_private_key.devenv.public_key_openssh 
     }
 
     tags = {
