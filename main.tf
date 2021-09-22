@@ -252,7 +252,7 @@ resource "azurerm_storage_account" "devenv" {
   name                     = "dev${random_id.randomId.hex}"
   resource_group_name      = azurerm_resource_group.proj1.name
   location                 = azurerm_resource_group.proj1.location
- network_interface_ids     = [azurerm_network_interface.devenv.id]
+ network_interface_ids     = [azurerm_network_interface.dev.id]
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
