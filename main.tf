@@ -242,7 +242,7 @@ resource "azurerm_network_security_group" "devenv" {
   }
 }
 
-resource "azurerm_network_interface" "devenv" {
+resource "azurerm_network_interface" "dev" {
   name                = "dev-inter"
   location            = azurerm_resource_group.proj1.location
   resource_group_name = azurerm_resource_group.proj1.name
@@ -260,7 +260,7 @@ resource "azurerm_network_interface" "devenv" {
 }
 
 resource "azurerm_network_interface_security_group_association" "devenv" {
-  network_interface_id      = azurerm_network_interface.devenv.id
+  network_interface_id      = azurerm_network_interface.dev.id
   network_security_group_id = azurerm_network_security_group.devenv.id
 }
 
