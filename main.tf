@@ -132,7 +132,6 @@ resource "azurerm_linux_virtual_machine" "prodenv" {
   name                = "prod-machine"
   resource_group_name = azurerm_resource_group.proj.name
   location            = azurerm_resource_group.proj.location
-  network_interface_ids = [azurerm_network_interface.prodenv.id]
   size                = "Standard_F2"
   admin_username      = "azureuser"
   network_interface_ids = [
@@ -253,7 +252,7 @@ resource "azurerm_storage_account" "devenv" {
   name                     = "dev${random_id.randomId.hex}"
   resource_group_name      = azurerm_resource_group.proj1.name
   location                 = azurerm_resource_group.proj1.location
- network_interface_ids = [azurerm_network_interface.devenv.id]
+ network_interface_ids     = azurerm_network_interface.devenv.id
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
