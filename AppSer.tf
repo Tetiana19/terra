@@ -26,7 +26,7 @@ provider "azurerm" {
 
 
 resource "azurerm_resource_group" "prodenv" {
-  name     = "prod"
+  name     = "Intermine_Project"
   location = "West Europe"
 }
 
@@ -56,6 +56,11 @@ resource "azurerm_network_interface" "prodenv" {
   }
 }
 
+resource "tls_private_key" "example_ssh" {
+    algorithm = "RSA"
+    rsa_bits = 4096
+}
+
 resource "azurerm_linux_virtual_machine" "prodenv" {
   name                = "prod-machine"
   resource_group_name = azurerm_resource_group.prodenv.name
@@ -66,10 +71,14 @@ resource "azurerm_linux_virtual_machine" "prodenv" {
     azurerm_network_interface.prodenv.id,
   ]
 
-  admin_ssh_key {
-    username   = "azureuser"
-    public_key = file("~/.ssh/id_rsa.pub")
-  }
+   admin_ssh_key {
+        username = "azureuser"
+        public_key = tls_private_key.example_ssh.public_key_openssh #The magic here
+    }
+
+    tags = {
+        environment = "Production"
+    }
 
   os_disk {
     caching              = "ReadWrite"
@@ -83,5 +92,72 @@ resource "azurerm_linux_virtual_machine" "prodenv" {
     version   = "latest"
   }
 }
+
+
+#Dev env
+resource "azurerm_virtual_network" "devenv" {
+  name                = "prod-network"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.devenv.location
+  resource_group_name = azurerm_resource_group.devenv.name
+}
+
+resource "azurerm_subnet" "devenv" {
+  name                 = "internal"
+  resource_group_name  = azurerm_resource_group.devenv.name
+  virtual_network_name = azurerm_virtual_network.devenv.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+resource "azurerm_network_interface" "devenv" {
+  name                = "dev-nic"
+  location            = azurerm_resource_group.devenv.location
+  resource_group_name = azurerm_resource_group.devenv.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.devenv.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+resource "tls_private_key" "example_ssh" {
+    algorithm = "RSA"
+    rsa_bits = 4096
+}
+
+resource "azurerm_linux_virtual_machine" "dev" {
+  name                = "devd-machine"
+  resource_group_name = azurerm_resource_group.devenv.name
+  location            = azurerm_resource_group.devenv.location
+  size                = "Standard_F2"
+  admin_username      = "azureuser"
+  network_interface_ids = [
+    azurerm_network_interface.devenv.id,
+  ]
+
+   admin_ssh_key {
+        username = "azureuser"
+        public_key = tls_private_key.example_ssh.public_key_openssh #The magic here
+    }
+
+    tags = {
+        environment = "Development"
+    }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "16.04-LTS"
+    version   = "latest"
+  }
+}
+
+
 
 
