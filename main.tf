@@ -200,7 +200,7 @@ resource "azurerm_network_interface" "devenv" {
   ip_configuration {
     name                          = "dinternal"
     subnet_id                     = azurerm_subnet.devenv.id
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
   }
 }
 
