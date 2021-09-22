@@ -48,7 +48,7 @@ resource "azurerm_app_service_plan" "prodenv" {
   name                = "prod-appserviceplan"
   location            = azurerm_resource_group.prodenv.location
   resource_group_name = azurerm_resource_group.prodenv.name
-  os_type             = "Linux"
+  
 
   sku {
     tier = "Basic"
@@ -90,7 +90,7 @@ resource "azurerm_app_service_plan" "devenv" {
   name                = "dev-appserviceplan"
   location            = azurerm_resource_group.devenv.location
   resource_group_name = azurerm_resource_group.devenv.name
-  os_type             = "Linux"
+  
 
   sku {
     tier = "Basic"
