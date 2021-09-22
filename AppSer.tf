@@ -61,10 +61,82 @@ resource "azurerm_public_ip" "prodenv" {
   resource_group_name = azurerm_resource_group.proj.name
   location            = azurerm_resource_group.proj.location
   allocation_method   = "Static"
+ 
+ tags = {
+    environment = "Production"
+  }
 }
 resource "tls_private_key" "prodenv" {
     algorithm = "RSA"
     rsa_bits = 4096
+}
+
+resource "azurerm_network_security_group" "nsg" {
+  name                = var.network_security_group_name
+  location            = azurerm_resource_group.proj.location
+  resource_group_name = azurerm_resource_group.proj.name
+
+  security_rule {
+    name                       = "SSH"
+    priority                   = 1001
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  tags = {
+    environment = "Production"
+  }
+}
+
+resource "azurerm_network_interface" "nic" {
+  name                = var.network_interface_name
+  location            = azurerm_resource_group.proj.location
+  resource_group_name = azurerm_resource_group.proj.name
+
+  ip_configuration {
+    name                          = "myNicConfiguration"
+    subnet_id                     = azurerm_subnet.prodenv.id
+    private_ip_address_allocation = "Static"
+    public_ip_address_id          = azurerm_public_ip.prodenv.id
+  }
+
+  tags = {
+    environment = "Production"
+  }
+}
+
+# Connect the security group to the network interface
+resource "azurerm_network_interface_security_group_association" "association" {
+  network_interface_id      = azurerm_network_interface.nic.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}
+
+# Generate random text for a unique storage account name
+resource "random_id" "randomId" {
+  keepers = {
+    # Generate a new ID only when a new resource group is defined
+    resource_group = azurerm_resource_group.proj.name
+  }
+
+  byte_length = 8
+}
+
+# Create storage account for boot diagnostics
+resource "azurerm_storage_account" "storage" {
+  name                     = "diag${random_id.randomId.hex}"
+  resource_group_name      = azurerm_resource_group.proj.name
+  location                 = azurerm_resource_group.proj.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  tags = {
+    environment = "Production"
+  }
 }
 
 resource "azurerm_linux_virtual_machine" "prodenv" {
@@ -142,9 +214,81 @@ resource "tls_private_key" "devenv" {
   resource_group_name = azurerm_resource_group.proj1.name
   location            = azurerm_resource_group.proj1.location
   allocation_method   = "Static"
+  
+  tags = {
+    environment = "Development"
+  }
  }
 
-resource "azurerm_linux_virtual_machine" "dev" {
+resource "azurerm_network_security_group" "nsg" {
+  name                = var.network_security_group_name
+  location            = azurerm_resource_group.proj1.location
+  resource_group_name = azurerm_resource_group.proj1.name
+
+  security_rule {
+    name                       = "SSH"
+    priority                   = 1001
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  tags = {
+    environment = "Development"
+  }
+}
+
+resource "azurerm_network_interface" "nic" {
+  name                = var.network_interface_name
+  location            = azurerm_resource_group.proj1.location
+  resource_group_name = azurerm_resource_group.proj1.name
+
+  ip_configuration {
+    name                          = "myNicConfiguration"
+    subnet_id                     = azurerm_subnet.devenv.id
+    private_ip_address_allocation = "Static"
+    public_ip_address_id          = azurerm_public_ip.devenv.id
+  }
+
+  tags = {
+    environment = "Development"
+  }
+}
+
+resource "azurerm_network_interface_security_group_association" "association" {
+  network_interface_id      = azurerm_network_interface.nic.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}
+
+# Generate random text for a unique storage account name
+resource "random_id" "randomId" {
+  keepers = {
+    # Generate a new ID only when a new resource group is defined
+    resource_group = azurerm_resource_group.proj.name
+  }
+
+  byte_length = 8
+}
+
+# Create storage account for boot diagnostics
+resource "azurerm_storage_account" "storage" {
+  name                     = "diag${random_id.randomId.hex}"
+  resource_group_name      = azurerm_resource_group.proj1.name
+  location                 = azurerm_resource_group.proj1.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  tags = {
+    environment = "Development"
+  }
+}
+
+
+resource "azurerm_linux_virtual_machine" "devenv" {
   name                = "dev-machine"
   resource_group_name = azurerm_resource_group.proj1.name
   location            = azurerm_resource_group.proj1.location
