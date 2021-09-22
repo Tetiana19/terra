@@ -32,7 +32,7 @@ resource "azurerm_resource_group" "proj" {
 
 resource "azurerm_virtual_network" "prodenv" {
   name                = "prod-network"
-  address_space       = ["10.0.1.0/16"]
+  address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.proj.location
   resource_group_name = azurerm_resource_group.proj.name
 }
@@ -97,7 +97,7 @@ resource "azurerm_linux_virtual_machine" "prodenv" {
 #Dev env
 resource "azurerm_virtual_network" "devenv" {
   name                = "prod-network"
-  address_space       = ["10.0.3.0/16"]
+  address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.proj.location
   resource_group_name = azurerm_resource_group.proj.name
 }
