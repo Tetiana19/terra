@@ -32,13 +32,13 @@ resource "azurerm_resource_group" "proj" {
 
 resource "azurerm_virtual_network" "prodenv" {
   name                = "prod-network"
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["10.0.1.0/16"]
   location            = azurerm_resource_group.proj.location
   resource_group_name = azurerm_resource_group.proj.name
 }
 
 resource "azurerm_subnet" "prodenv" {
-  name                 = "internal"
+  name                 = "pinternal"
   resource_group_name  = azurerm_resource_group.proj.name
   virtual_network_name = azurerm_virtual_network.prodenv.name
   address_prefixes     = ["10.0.2.0/24"]
@@ -50,7 +50,7 @@ resource "azurerm_network_interface" "prodenv" {
   resource_group_name = azurerm_resource_group.proj.name
 
   ip_configuration {
-    name                          = "internal"
+    name                          = "pinternal"
     subnet_id                     = azurerm_subnet.prodenv.id
     private_ip_address_allocation = "Dynamic"
   }
@@ -97,16 +97,16 @@ resource "azurerm_linux_virtual_machine" "prodenv" {
 #Dev env
 resource "azurerm_virtual_network" "devenv" {
   name                = "prod-network"
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["10.0.3.0/16"]
   location            = azurerm_resource_group.proj.location
   resource_group_name = azurerm_resource_group.proj.name
 }
 
 resource "azurerm_subnet" "devenv" {
-  name                 = "internal"
+  name                 = "dinternal"
   resource_group_name  = azurerm_resource_group.proj.name
   virtual_network_name = azurerm_virtual_network.devenv.name
-  address_prefixes     = ["10.0.2.0/24"]
+  address_prefixes     = ["10.0.4.0/24"]
 }
 
 resource "azurerm_network_interface" "devenv" {
@@ -115,7 +115,7 @@ resource "azurerm_network_interface" "devenv" {
   resource_group_name = azurerm_resource_group.proj.name
 
   ip_configuration {
-    name                          = "internal"
+    name                          = "dinternal"
     subnet_id                     = azurerm_subnet.devenv.id
     private_ip_address_allocation = "Dynamic"
   }
