@@ -127,7 +127,7 @@ resource "random_id" "randomId" {
 }
 
 # Create storage account for boot diagnostics
-resource "azurerm_storage_account" "storage" {
+resource "azurerm_storage_account" "proden" {
   name                     = "diag${random_id.randomId.hex}"
   resource_group_name      = azurerm_resource_group.proj.name
   location                 = azurerm_resource_group.proj.location
@@ -275,7 +275,7 @@ resource "random_id" "randomId" {
 }
 
 # Create storage account for boot diagnostics
-resource "azurerm_storage_account" "storage" {
+resource "azurerm_storage_account" "devenv" {
   name                     = "diag${random_id.randomId.hex}"
   resource_group_name      = azurerm_resource_group.proj1.name
   location                 = azurerm_resource_group.proj1.location
