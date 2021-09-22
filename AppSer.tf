@@ -34,15 +34,15 @@ resource "random_integer" "app_service_name_suffix" {
   max = 9999
 }
 
-resource "azurerm_resource_group" "example" {
+resource "azurerm_resource_group" "prodenv" {
   name     = "prod"
   location = "West Europe"
 }
 
-resource "azurerm_app_service_plan" "example" {
+resource "azurerm_app_service_plan" "prodenv" {
   name                = "prod-appserviceplan"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.prodenv.location
+  resource_group_name = azurerm_resource_group.prodenv.name
 
   sku {
     tier = "Basic"
@@ -52,9 +52,50 @@ resource "azurerm_app_service_plan" "example" {
 
 resource "azurerm_app_service" "prod" {
   name                = "${var.app_service_name_prefix}-dev-${random_integer.app_service_name_suffix.result}"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  app_service_plan_id = azurerm_app_service_plan.example.id
+  location            = azurerm_resource_group.prodenv.location
+  resource_group_name = azurerm_resource_group.prodenv.name
+  app_service_plan_id = azurerm_app_service_plan.prodenv.id
+
+  site_config {
+    dotnet_framework_version = "v4.0"
+    scm_type                 = "LocalGit"
+  }
+
+  app_settings = {
+    "SOME_KEY" = "some-value"
+  }
+
+  connection_string {
+    name  = "Database"
+    type  = "SQLServer"
+    value = "Server=some-server.mydomain.com;Integrated Security=SSPI"
+  }
+}
+
+
+
+
+resource "azurerm_resource_group" "devenv" {
+  name     = "devproj"
+  location = "West Europe"
+}
+
+resource "azurerm_app_service_plan" "devenv" {
+  name                = "dev-appserviceplan"
+  location            = azurerm_resource_group.devenv.location
+  resource_group_name = azurerm_resource_group.devenv.name
+
+  sku {
+    tier = "Basic"
+    size = "B1"
+ }
+}
+
+resource "azurerm_app_service" "dev" {
+  name                = "${var.app_service_name_prefix}-dev-${random_integer.app_service_name_suffix.result}"
+  location            = azurerm_resource_group.devenv.location
+  resource_group_name = azurerm_resource_group.devenv.name
+  app_service_plan_id = azurerm_app_service_plan.devenv.id
 
   site_config {
     dotnet_framework_version = "v4.0"
