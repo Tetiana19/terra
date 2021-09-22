@@ -56,6 +56,12 @@ resource "azurerm_network_interface" "prodenv" {
   }
 }
 
+resource "azurerm_public_ip" "prodenv" {
+  name                = "prodpubip"
+  resource_group_name = azurerm_resource_group.proj.name
+  location            = azurerm_resource_group.proj.location
+  allocation_method   = "Static"
+}
 resource "tls_private_key" "prodenv" {
     algorithm = "RSA"
     rsa_bits = 4096
@@ -130,9 +136,16 @@ resource "tls_private_key" "devenv" {
     algorithm = "RSA"
     rsa_bits = 4096
 }
+ 
+ resource "azurerm_public_ip" "devenv" {
+  name                = "devpubip"
+  resource_group_name = azurerm_resource_group.proj1.name
+  location            = azurerm_resource_group.proj1.location
+  allocation_method   = "Static"
+ }
 
 resource "azurerm_linux_virtual_machine" "dev" {
-  name                = "devd-machine"
+  name                = "dev-machine"
   resource_group_name = azurerm_resource_group.proj1.name
   location            = azurerm_resource_group.proj1.location
   size                = "Standard_F2"
