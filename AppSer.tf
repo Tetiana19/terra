@@ -72,7 +72,7 @@ resource "tls_private_key" "prodenv" {
 }
 
 resource "azurerm_network_security_group" "nsg" {
-  name                = var.network_security_group_name
+  name                = "prodSG"
   location            = azurerm_resource_group.proj.location
   resource_group_name = azurerm_resource_group.proj.name
 
@@ -94,7 +94,7 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 resource "azurerm_network_interface" "nic" {
-  name                = var.network_interface_name
+  name                = "prod-inter"
   location            = azurerm_resource_group.proj.location
   resource_group_name = azurerm_resource_group.proj.name
 
@@ -221,7 +221,7 @@ resource "tls_private_key" "devenv" {
  }
 
 resource "azurerm_network_security_group" "nsg" {
-  name                = var.network_security_group_name
+  name                = "devSG"
   location            = azurerm_resource_group.proj1.location
   resource_group_name = azurerm_resource_group.proj1.name
 
@@ -243,7 +243,7 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 resource "azurerm_network_interface" "nic" {
-  name                = var.network_interface_name
+  name                = "dev-inter"
   location            = azurerm_resource_group.proj1.location
   resource_group_name = azurerm_resource_group.proj1.name
 
