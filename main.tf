@@ -85,7 +85,7 @@ resource "azurerm_network_interface" "prodenv" {
   ip_configuration {
     name                          = "myNicConfiguration"
     subnet_id                     = azurerm_subnet.prodenv.id
-    private_ip_address_allocation = "Static"
+    private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.prodenv.id
   }
 
@@ -223,7 +223,7 @@ resource "azurerm_network_interface" "dev" {
   ip_configuration {
     name                          = "myNicConfiguration"
     subnet_id                     = azurerm_subnet.devenv.id
-    private_ip_address_allocation = "Static"
+    private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.devenv.id
   }
 
