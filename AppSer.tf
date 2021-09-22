@@ -101,7 +101,7 @@ resource "azurerm_resource_group" "proj1" {
 }
 
 resource "azurerm_virtual_network" "devenv" {
-  name                = "prod-network"
+  name                = "dev-network"
   address_space       = ["11.0.0.0/16"]
   location            = azurerm_resource_group.proj1.location
   resource_group_name = azurerm_resource_group.proj1.name
