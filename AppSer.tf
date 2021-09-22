@@ -25,7 +25,7 @@ provider "azurerm" {
 }
 
 
-resource "azurerm_resource_group" "prodenv" {
+resource "azurerm_resource_group" "proj" {
   name     = "Intermine_Project"
   location = "West Europe"
 }
@@ -33,21 +33,21 @@ resource "azurerm_resource_group" "prodenv" {
 resource "azurerm_virtual_network" "prodenv" {
   name                = "prod-network"
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.prodenv.location
-  resource_group_name = azurerm_resource_group.prodenv.name
+  location            = azurerm_resource_group.proj.location
+  resource_group_name = azurerm_resource_group.proj.name
 }
 
 resource "azurerm_subnet" "prodenv" {
   name                 = "internal"
-  resource_group_name  = azurerm_resource_group.prodenv.name
+  resource_group_name  = azurerm_resource_group.proj.name
   virtual_network_name = azurerm_virtual_network.prodenv.name
   address_prefixes     = ["10.0.2.0/24"]
 }
 
 resource "azurerm_network_interface" "prodenv" {
   name                = "prod-nic"
-  location            = azurerm_resource_group.prodenv.location
-  resource_group_name = azurerm_resource_group.prodenv.name
+  location            = azurerm_resource_group.proj.location
+  resource_group_name = azurerm_resource_group.proj.name
 
   ip_configuration {
     name                          = "internal"
@@ -63,8 +63,8 @@ resource "tls_private_key" "prodenv" {
 
 resource "azurerm_linux_virtual_machine" "prodenv" {
   name                = "prod-machine"
-  resource_group_name = azurerm_resource_group.prodenv.name
-  location            = azurerm_resource_group.prodenv.location
+  resource_group_name = azurerm_resource_group.proj.name
+  location            = azurerm_resource_group.proj.location
   size                = "Standard_F2"
   admin_username      = "azureuser"
   network_interface_ids = [
@@ -98,21 +98,21 @@ resource "azurerm_linux_virtual_machine" "prodenv" {
 resource "azurerm_virtual_network" "devenv" {
   name                = "prod-network"
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.devenv.location
-  resource_group_name = azurerm_resource_group.devenv.name
+  location            = azurerm_resource_group.proj.location
+  resource_group_name = azurerm_resource_group.proj.name
 }
 
 resource "azurerm_subnet" "devenv" {
   name                 = "internal"
-  resource_group_name  = azurerm_resource_group.devenv.name
+  resource_group_name  = azurerm_resource_group.proj.name
   virtual_network_name = azurerm_virtual_network.devenv.name
   address_prefixes     = ["10.0.2.0/24"]
 }
 
 resource "azurerm_network_interface" "devenv" {
   name                = "dev-nic"
-  location            = azurerm_resource_group.devenv.location
-  resource_group_name = azurerm_resource_group.devenv.name
+  location            = azurerm_resource_group.proj.location
+  resource_group_name = azurerm_resource_group.proj.name
 
   ip_configuration {
     name                          = "internal"
@@ -128,8 +128,8 @@ resource "tls_private_key" "devenv" {
 
 resource "azurerm_linux_virtual_machine" "dev" {
   name                = "devd-machine"
-  resource_group_name = azurerm_resource_group.devenv.name
-  location            = azurerm_resource_group.devenv.location
+  resource_group_name = azurerm_resource_group.proj.name
+  location            = azurerm_resource_group.proj.location
   size                = "Standard_F2"
   admin_username      = "azureuser"
   network_interface_ids = [
