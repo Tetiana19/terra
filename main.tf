@@ -66,10 +66,6 @@ resource "azurerm_public_ip" "prodenv" {
     environment = "Production"
   }
 }
-resource "tls_private_key" "prodenv" {
-    algorithm = "RSA"
-    rsa_bits = 4096
-}
 
 resource "azurerm_network_security_group" "nsg" {
   name                = "prodSG"
@@ -139,6 +135,11 @@ resource "azurerm_storage_account" "proden" {
   }
 }
 
+resource "tls_private_key" "prodenv" {
+    algorithm = "RSA"
+    rsa_bits = 4096
+}
+
 resource "azurerm_linux_virtual_machine" "prodenv" {
   name                = "prod-machine"
   resource_group_name = azurerm_resource_group.proj.name
@@ -204,10 +205,6 @@ resource "azurerm_network_interface" "devenv" {
   }
 }
 
-resource "tls_private_key" "devenv" {
-    algorithm = "RSA"
-    rsa_bits = 4096
-}
  
  resource "azurerm_public_ip" "devenv" {
   name                = "devpubip"
@@ -287,6 +284,10 @@ resource "azurerm_storage_account" "devenv" {
   }
 }
 
+resource "tls_private_key" "devenv" {
+    algorithm = "RSA"
+    rsa_bits = 4096
+}
 
 resource "azurerm_linux_virtual_machine" "devenv" {
   name                = "dev-machine"
