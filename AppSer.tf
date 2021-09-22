@@ -24,8 +24,13 @@ provider "azurerm" {
   tenant_id       = "b41b72d0-4e9f-4c26-8a69-f949f367c91d"
 }
 
-variable "app_service_name_prefix" {
+variable "app_service_name_prefix1" {
   default = "my-prod-env"
+  description = "The beginning part of your App Service host name"
+}
+
+variable "app_service_name_prefix2" {
+  default = "my-dev-env"
   description = "The beginning part of your App Service host name"
 }
 
@@ -51,7 +56,7 @@ resource "azurerm_app_service_plan" "prodenv" {
 }
 
 resource "azurerm_app_service" "prod" {
-  name                = "${var.app_service_name_prefix}-dev-${random_integer.app_service_name_suffix.result}"
+  name                = "${var.app_service_name_prefix1}-prod-${random_integer.app_service_name_suffix.result}"
   location            = azurerm_resource_group.prodenv.location
   resource_group_name = azurerm_resource_group.prodenv.name
   app_service_plan_id = azurerm_app_service_plan.prodenv.id
@@ -76,7 +81,7 @@ resource "azurerm_app_service" "prod" {
 
 
 resource "azurerm_resource_group" "devenv" {
-  name     = "devproj"
+  name     = "dev"
   location = "West Europe"
 }
 
@@ -92,7 +97,7 @@ resource "azurerm_app_service_plan" "devenv" {
 }
 
 resource "azurerm_app_service" "dev" {
-  name                = "${var.app_service_name_prefix}-dev-${random_integer.app_service_name_suffix.result}"
+  name                = "${var.app_service_name_prefix2}-dev-${random_integer.app_service_name_suffix.result}"
   location            = azurerm_resource_group.devenv.location
   resource_group_name = azurerm_resource_group.devenv.name
   app_service_plan_id = azurerm_app_service_plan.devenv.id
