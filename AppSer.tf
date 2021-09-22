@@ -97,7 +97,7 @@ resource "azurerm_linux_virtual_machine" "prodenv" {
 #Dev env
 resource "azurerm_virtual_network" "devenv" {
   name                = "prod-network"
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["11.0.0.0/16"]
   location            = azurerm_resource_group.proj.location
   resource_group_name = azurerm_resource_group.proj.name
 }
@@ -106,7 +106,7 @@ resource "azurerm_subnet" "devenv" {
   name                 = "dinternal"
   resource_group_name  = azurerm_resource_group.proj.name
   virtual_network_name = azurerm_virtual_network.devenv.name
-  address_prefixes     = ["10.0.4.0/24"]
+  address_prefixes     = ["11.0.4.0/24"]
 }
 
 resource "azurerm_network_interface" "devenv" {
