@@ -61,7 +61,7 @@ resource "azurerm_linux_virtual_machine" "prodenv" {
   resource_group_name = azurerm_resource_group.prodenv.name
   location            = azurerm_resource_group.prodenv.location
   size                = "Standard_F2"
-  admin_username      = "adminuser"
+  admin_username      = "azureuser"
   network_interface_ids = [
     azurerm_network_interface.prodenv.id,
   ]
