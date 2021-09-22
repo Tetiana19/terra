@@ -128,7 +128,7 @@ resource "random_id" "randomId" {
 
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "proden" {
-  name                     = "diag${random_id.randomId.hex}"
+  name                     = "prod${random_id.randomId.hex}"
   resource_group_name      = azurerm_resource_group.proj.name
   location                 = azurerm_resource_group.proj.location
   account_tier             = "Standard"
@@ -265,18 +265,18 @@ resource "azurerm_network_interface_security_group_association" "association" {
 }
 
 # Generate random text for a unique storage account name
-resource "random_id" "randomId" {
-  keepers = {
+#resource "random_id" "randomId" {
+#  keepers = {
     # Generate a new ID only when a new resource group is defined
-    resource_group = azurerm_resource_group.proj.name
-  }
+  #  resource_group = azurerm_resource_group.proj.name
+  #}
 
-  byte_length = 8
-}
+ # byte_length = 8
+#}
 
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "devenv" {
-  name                     = "diag${random_id.randomId.hex}"
+  name                     = "dev${random_id.randomId.hex}"
   resource_group_name      = azurerm_resource_group.proj1.name
   location                 = azurerm_resource_group.proj1.location
   account_tier             = "Standard"
