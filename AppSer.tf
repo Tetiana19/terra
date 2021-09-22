@@ -24,98 +24,64 @@ provider "azurerm" {
   tenant_id       = "b41b72d0-4e9f-4c26-8a69-f949f367c91d"
 }
 
-variable "app_service_name_prefix1" {
-  default = "my-prod-env"
-  description = "The beginning part of your App Service host name"
-}
-
-variable "app_service_name_prefix2" {
-  default = "my-dev-env"
-  description = "The beginning part of your App Service host name"
-}
-
-resource "random_integer" "app_service_name_suffix" {
-  min = 1000
-  max = 9999
-}
 
 resource "azurerm_resource_group" "prodenv" {
   name     = "prod"
   location = "West Europe"
 }
 
-resource "azurerm_app_service_plan" "prodenv" {
-  name                = "prod-appserviceplan"
+resource "azurerm_virtual_network" "prodenv" {
+  name                = "prod-network"
+  address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.prodenv.location
   resource_group_name = azurerm_resource_group.prodenv.name
-  
-
-  sku {
-    tier = "Basic"
-    size = "B1"
- }
 }
 
-resource "azurerm_app_service" "prod" {
-  name                = "${var.app_service_name_prefix1}-prod-${random_integer.app_service_name_suffix.result}"
+resource "azurerm_subnet" "prodenv" {
+  name                 = "internal"
+  resource_group_name  = azurerm_resource_group.prodenv.name
+  virtual_network_name = azurerm_virtual_network.prodenv.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+resource "azurerm_network_interface" "prodenv" {
+  name                = "prod-nic"
   location            = azurerm_resource_group.prodenv.location
   resource_group_name = azurerm_resource_group.prodenv.name
-  app_service_plan_id = azurerm_app_service_plan.prodenv.id
 
-  site_config {
-    dotnet_framework_version = "v4.0"
-    scm_type                 = "LocalGit"
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.prodenv.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+resource "azurerm_linux_virtual_machine" "prodenv" {
+  name                = "prod-machine"
+  resource_group_name = azurerm_resource_group.prodenv.name
+  location            = azurerm_resource_group.prodenv.location
+  size                = "Standard_F2"
+  admin_username      = "adminuser"
+  network_interface_ids = [
+    azurerm_network_interface.prodenv.id,
+  ]
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = file("~/.ssh/id_rsa.pub")
   }
 
-  app_settings = {
-    "SOME_KEY" = "some-value"
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
   }
 
-  connection_string {
-    name  = "Database"
-    type  = "SQLServer"
-    value = "Server=some-server.mydomain.com;Integrated Security=SSPI"
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "16.04-LTS"
+    version   = "latest"
   }
 }
 
 
-
-
-resource "azurerm_resource_group" "devenv" {
-  name     = "dev"
-  location = "West Europe"
-}
-
-resource "azurerm_app_service_plan" "devenv" {
-  name                = "dev-appserviceplan"
-  location            = azurerm_resource_group.devenv.location
-  resource_group_name = azurerm_resource_group.devenv.name
-  
-
-  sku {
-    tier = "Basic"
-    size = "B1"
- }
-}
-
-resource "azurerm_app_service" "dev" {
-  name                = "${var.app_service_name_prefix2}-dev-${random_integer.app_service_name_suffix.result}"
-  location            = azurerm_resource_group.devenv.location
-  resource_group_name = azurerm_resource_group.devenv.name
-  app_service_plan_id = azurerm_app_service_plan.devenv.id
-
-  site_config {
-    dotnet_framework_version = "v4.0"
-    scm_type                 = "LocalGit"
-  }
-
-  app_settings = {
-    "SOME_KEY" = "some-value"
-  }
-
-  connection_string {
-    name  = "Database"
-    type  = "SQLServer"
-    value = "Server=some-server.mydomain.com;Integrated Security=SSPI"
-  }
-}
