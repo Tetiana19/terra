@@ -220,7 +220,7 @@ resource "tls_private_key" "devenv" {
   }
  }
 
-resource "azurerm_network_security_group" "nsg" {
+resource "azurerm_network_security_group" "devenv" {
   name                = "devSG"
   location            = azurerm_resource_group.proj1.location
   resource_group_name = azurerm_resource_group.proj1.name
@@ -242,7 +242,7 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
-resource "azurerm_network_interface" "nic" {
+resource "azurerm_network_interface" "devenv" {
   name                = "dev-inter"
   location            = azurerm_resource_group.proj1.location
   resource_group_name = azurerm_resource_group.proj1.name
@@ -259,9 +259,9 @@ resource "azurerm_network_interface" "nic" {
   }
 }
 
-resource "azurerm_network_interface_security_group_association" "association" {
-  network_interface_id      = azurerm_network_interface.nic.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
+resource "azurerm_network_interface_security_group_association" "devenv" {
+  network_interface_id      = azurerm_network_interface.devenv.id
+  network_security_group_id = azurerm_network_security_group.devenv.id
 }
 
 # Generate random text for a unique storage account name
