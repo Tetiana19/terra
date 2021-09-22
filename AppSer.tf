@@ -56,7 +56,7 @@ resource "azurerm_network_interface" "prodenv" {
   }
 }
 
-resource "tls_private_key" "example_ssh" {
+resource "tls_private_key" "prodenv" {
     algorithm = "RSA"
     rsa_bits = 4096
 }
@@ -73,7 +73,7 @@ resource "azurerm_linux_virtual_machine" "prodenv" {
 
    admin_ssh_key {
         username = "azureuser"
-        public_key = tls_private_key.example_ssh.public_key_openssh #The magic here
+        public_key = tls_private_key.prodenv.public_key_openssh 
     }
 
     tags = {
@@ -121,7 +121,7 @@ resource "azurerm_network_interface" "devenv" {
   }
 }
 
-resource "tls_private_key" "example_ssh" {
+resource "tls_private_key" "devenv" {
     algorithm = "RSA"
     rsa_bits = 4096
 }
@@ -138,7 +138,7 @@ resource "azurerm_linux_virtual_machine" "dev" {
 
    admin_ssh_key {
         username = "azureuser"
-        public_key = tls_private_key.example_ssh.public_key_openssh #The magic here
+        public_key = tls_private_key.devenv.public_key_openssh #The magic here
     }
 
     tags = {
