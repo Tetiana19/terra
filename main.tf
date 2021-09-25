@@ -1,10 +1,3 @@
-#terraform {
- # required_version = "> 0.12.0"
-  
-#provider "azurerm" {
-#  version = ">=2.0.79"
-#  features {}
-#}
 terraform {
   required_providers {
     azurerm = {
@@ -237,15 +230,6 @@ resource "azurerm_network_interface_security_group_association" "devenv" {
   network_security_group_id = azurerm_network_security_group.devenv.id
 }
 
-# Generate random text for a unique storage account name
-#resource "random_id" "randomId" {
-#  keepers = {
-    # Generate a new ID only when a new resource group is defined
-  #  resource_group = azurerm_resource_group.proj.name
-  #}
-
- # byte_length = 8
-#}
 
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "devenv" {
